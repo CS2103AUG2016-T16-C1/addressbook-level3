@@ -1,7 +1,9 @@
 package seedu.addressbook.commands;
 
+import seedu.addressbook.common.Messages;
 import seedu.addressbook.data.exception.IllegalValueException;
 import seedu.addressbook.data.person.*;
+import seedu.addressbook.data.person.UniquePersonList.PersonNotFoundException;
 import seedu.addressbook.data.tag.Tag;
 import seedu.addressbook.data.tag.UniqueTagList;
 
@@ -9,48 +11,98 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Adds a person to the address book.
+ * Edits a person's details to the address book.
  */
 public class EditCommand extends Command {
 
     public static final String COMMAND_WORD = "edit";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ":\n" + "Edits a person in the address book. "
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ":\n" + "Edits a person's details in the address book. "
             + "Contact details can be marked private by prepending 'p' to the prefix.\n\t"
-            + "Parameters: NAME [p]p/PHONE [p]e/EMAIL [p]a/ADDRESS  [t/TAG]...\n\t"
-            + "Example: " + COMMAND_WORD
-            + " John Doe p/98765432 e/johnd@gmail.com a/311, Clementi Ave 2, #02-25 t/friends t/owesMoney";
+            + "Parameters: NAME <NEW_NAME> / EMAIL <NEW_EMAIL> / ADDRESS <NEW_ADDRESS> / PHONE <NEW_PHONE>"
+            + "Example: " + COMMAND_WORD  
+            + " NAME johncena or " + COMMAND_WORD + " EMAIL johncena@wwemail.com";
 
-    public static final String MESSAGE_SUCCESS = "New person added: %1$s";
+    public static final String MESSAGE_SUCCESS = "Person: %1$s, details updated ";
     public static final String MESSAGE_DUPLICATE_PERSON = "This person already exists in the address book";
 
-    private final Person toEdit;
+    private final ReadOnlyPerson toEdit;
+    private Person edited;
+
 
     /**
-     * Convenience constructor using raw values.
-     *
-     * @throws IllegalValueException if any of the raw values are invalid
+     *  Convenience 
+     * 
+     * @param
      */
-    public EditCommand(String name,
-                      String phone, boolean isPhonePrivate,
-                      String email, boolean isEmailPrivate,
-                      String address, boolean isAddressPrivate,
-                      Set<String> tags) throws IllegalValueException {
-        final Set<Tag> tagSet = new HashSet<>();
-        for (String tagName : tags) {
-            tagSet.add(new Tag(tagName));
-        }
-        this.toEdit = new Person(
-                new Name(name),
-                new Phone(phone, isPhonePrivate),
-                new Email(email, isEmailPrivate),
-                new Address(address, isAddressPrivate),
-                new UniqueTagList(tagSet)
-        );
+    public EditCommand(int targetVisibleIndex, String detail, String updatedDetail ){
+    	super(targetVisibleIndex);
+    	this.toEdit = getTargetPerson();
+    	
+    	if(detail == "NAME"){
+    		try {
+				this.edited = new Person(
+				        new Name(updatedDetail),
+				        this.toEdit.getPhone(),
+				        this.toEdit.getEmail(),
+				        this.toEdit.getAddress(),
+				        this.toEdit.getTags()
+				        );
+			} catch (IllegalValueException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    		
+    	}else if(detail == "ADDRESS"){
+    		try {
+				this.edited = new Person(
+				        this.toEdit.getName(),
+				        this.toEdit.getPhone(),
+				        this.toEdit.getEmail(),
+				        new Address(updatedDetail, true),
+				        this.toEdit.getTags()
+				        );
+			} catch (IllegalValueException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    		
+    	}else if(detail == "EMAIL"){
+    		try {
+				this.edited = new Person(
+				        this.toEdit.getName(),
+				        this.toEdit.getPhone(),
+				        new Email(updatedDetail, true),
+				        this.toEdit.getAddress(),
+				        this.toEdit.getTags()
+				        );
+			} catch (IllegalValueException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    		
+    	}else if(detail == "PHONE"){
+    		try {
+				this.edited = new Person(
+				        this.toEdit.getName(),
+				        new Phone(updatedDetail, true),
+				        this.toEdit.getEmail(),
+				        this.toEdit.getAddress(),
+				        this.toEdit.getTags()
+				        );
+			} catch (IllegalValueException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    		
+    	}else{
+    		this.edited = new Person(this.toEdit);
+    	}
+    	
     }
-
-    public EditCommand(Person toEdit) {
-        this.toEdit = toEdit;
+    public EditCommand(ReadOnlyPerson toEdit, Person edited){
+    	this.toEdit = toEdit;
+    	this.edited = edited;
     }
 
     public ReadOnlyPerson getPerson() {
@@ -60,11 +112,19 @@ public class EditCommand extends Command {
     @Override
     public CommandResult execute() {
         try {
-            addressBook.addPerson(toEdit);
-            return new CommandResult(String.format(MESSAGE_SUCCESS, toEdit));
+        	addressBook.removePerson(toEdit);
+            addressBook.addPerson(edited);
+            return new CommandResult(String.format(MESSAGE_SUCCESS, edited));
         } catch (UniquePersonList.DuplicatePersonException dpe) {
             return new CommandResult(MESSAGE_DUPLICATE_PERSON);
-        }
+        } catch (PersonNotFoundException e) {
+			return  new CommandResult(Messages.MESSAGE_PERSON_NOT_IN_ADDRESSBOOK);
+		}
     }
+
+
+	public Person getEdited() {
+		return edited;
+	}
 
 }
