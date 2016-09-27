@@ -19,9 +19,10 @@ public class EditCommand extends Command {
 
     public static final String MESSAGE_USAGE = COMMAND_WORD + ":\n" + "Edits a person's details in the address book. "
             + "Contact details can be marked private by prepending 'p' to the prefix.\n\t"
-            + "Parameters: NAME <NEW_NAME> / EMAIL <NEW_EMAIL> / ADDRESS <NEW_ADDRESS> / PHONE <NEW_PHONE>"
+            + "Parameters: INDEX NAME <NEW_NAME> / INDEX EMAIL <NEW_EMAIL> \n\t"
+            + "/ INDEX ADDRESS <NEW_ADDRESS> / INDEX PHONE <NEW_PHONE> \n"
             + "Example: " + COMMAND_WORD  
-            + " NAME johncena or " + COMMAND_WORD + " EMAIL johncena@wwemail.com";
+            + "1 NAME  johncena or " + COMMAND_WORD + "1 EMAIL johncena@wwemail.com";
 
     public static final String MESSAGE_SUCCESS = "Person: %1$s, details updated ";
     public static final String MESSAGE_DUPLICATE_PERSON = "This person already exists in the address book";
