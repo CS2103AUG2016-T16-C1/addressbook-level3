@@ -22,7 +22,7 @@ public class EditCommand extends Command {
             + "Parameters: INDEX NAME <NEW_NAME> / INDEX EMAIL <NEW_EMAIL> \n\t"
             + "/ INDEX ADDRESS <NEW_ADDRESS> / INDEX PHONE <NEW_PHONE> \n"
             + "Example: " + COMMAND_WORD  
-            + "1 NAME  johncena or " + COMMAND_WORD + "1 EMAIL johncena@wwemail.com";
+            + " 1 NAME  johncena or " + COMMAND_WORD + " 1 EMAIL johncena@wwemail.com";
 
     public static final String MESSAGE_SUCCESS = "Person: %1$s, details updated ";
     public static final String MESSAGE_DUPLICATE_PERSON = "This person already exists in the address book";
