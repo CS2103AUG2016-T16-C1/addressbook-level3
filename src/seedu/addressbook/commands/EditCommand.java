@@ -40,7 +40,7 @@ public class EditCommand extends Command {
     	super(targetVisibleIndex);
     	this.toEdit = getTargetPerson();
     	
-    	if(detail == "NAME"){
+    	if(detail.equalsIgnoreCase("NAME")){
     		try {
 				this.edited = new Person(
 				        new Name(updatedDetail),
@@ -54,7 +54,7 @@ public class EditCommand extends Command {
 				e.printStackTrace();
 			}
     		
-    	}else if(detail == "ADDRESS"){
+    	}else if(detail.equalsIgnoreCase("ADDRESS")){
     		try {
 				this.edited = new Person(
 				        this.toEdit.getName(),
@@ -68,7 +68,7 @@ public class EditCommand extends Command {
 				e.printStackTrace();
 			}
     		
-    	}else if(detail == "EMAIL"){
+    	}else if(detail.equalsIgnoreCase("EMAIL")){
     		try {
 				this.edited = new Person(
 				        this.toEdit.getName(),
@@ -82,7 +82,7 @@ public class EditCommand extends Command {
 				e.printStackTrace();
 			}
     		
-    	}else if(detail == "PHONE"){
+    	}else if(detail.equalsIgnoreCase( "PHONE")){
     		try {
 				this.edited = new Person(
 				        this.toEdit.getName(),
