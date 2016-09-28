@@ -19,8 +19,7 @@ public class EditCommand extends Command {
 
     public static final String MESSAGE_USAGE = COMMAND_WORD + ":\n" + "Edits a person's details in the address book. "
             + "Contact details can be marked private by prepending 'p' to the prefix.\n\t"
-            + "Parameters: INDEX NAME <NEW_NAME> / INDEX EMAIL <NEW_EMAIL> \n\t"
-            + "/ INDEX ADDRESS <NEW_ADDRESS> / INDEX PHONE <NEW_PHONE> \n"
+            + "Parameters: INDEX DETAIL_TO_CHANGE NEW_DETAIL\n\t"
             + "Example: " + COMMAND_WORD  
             + " 1 NAME  johncena or " + COMMAND_WORD + " 1 EMAIL johncena@wwemail.com";
 
@@ -32,69 +31,52 @@ public class EditCommand extends Command {
 
 
     /**
-     *  Convenience 
+     *  Convenience constructor to delete old person and create new person
      * 
      * @param
      */
-    public EditCommand(int targetVisibleIndex, String detail, String updatedDetail ){
+    public EditCommand(int targetVisibleIndex, String detail, String updatedDetail ) 
+    		throws IllegalValueException{
+    	
     	super(targetVisibleIndex);
     	this.toEdit = getTargetPerson();
     	
     	if(detail.equalsIgnoreCase("NAME")){
-    		try {
-				this.edited = new Person(
-				        new Name(updatedDetail),
-				        this.toEdit.getPhone(),
-				        this.toEdit.getEmail(),
-				        this.toEdit.getAddress(),
-				        this.toEdit.getTags()
-				        );
-			} catch (IllegalValueException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-    		
+			this.edited = new Person(
+			        new Name(updatedDetail),
+			        this.toEdit.getPhone(),
+			        this.toEdit.getEmail(),
+			        this.toEdit.getAddress(),
+			        this.toEdit.getTags()
+			        );
+			
+    
     	}else if(detail.equalsIgnoreCase("ADDRESS")){
-    		try {
-				this.edited = new Person(
-				        this.toEdit.getName(),
-				        this.toEdit.getPhone(),
-				        this.toEdit.getEmail(),
-				        new Address(updatedDetail, true),
-				        this.toEdit.getTags()
-				        );
-			} catch (IllegalValueException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			this.edited = new Person(
+			        this.toEdit.getName(),
+			        this.toEdit.getPhone(),
+			        this.toEdit.getEmail(),
+			        new Address(updatedDetail, true),
+			        this.toEdit.getTags()
+			        );
     		
     	}else if(detail.equalsIgnoreCase("EMAIL")){
-    		try {
-				this.edited = new Person(
-				        this.toEdit.getName(),
-				        this.toEdit.getPhone(),
-				        new Email(updatedDetail, true),
-				        this.toEdit.getAddress(),
-				        this.toEdit.getTags()
-				        );
-			} catch (IllegalValueException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			this.edited = new Person(
+			        this.toEdit.getName(),
+			        this.toEdit.getPhone(),
+			        new Email(updatedDetail, true),
+			        this.toEdit.getAddress(),
+			        this.toEdit.getTags()
+			        );
     		
     	}else if(detail.equalsIgnoreCase( "PHONE")){
-    		try {
-				this.edited = new Person(
-				        this.toEdit.getName(),
-				        new Phone(updatedDetail, true),
-				        this.toEdit.getEmail(),
-				        this.toEdit.getAddress(),
-				        this.toEdit.getTags()
-				        );
-			} catch (IllegalValueException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			this.edited = new Person(
+			        this.toEdit.getName(),
+			        new Phone(updatedDetail, true),
+			        this.toEdit.getEmail(),
+			        this.toEdit.getAddress(),
+			        this.toEdit.getTags()
+			        );
     		
     	}else{
     		this.edited = new Person(this.toEdit);
@@ -113,8 +95,8 @@ public class EditCommand extends Command {
     @Override
     public CommandResult execute() {
         try {
+        	addressBook.addPerson(getEdited());
         	addressBook.removePerson(toEdit);
-            addressBook.addPerson(edited);
             return new CommandResult(String.format(MESSAGE_SUCCESS, edited));
         } catch (UniquePersonList.DuplicatePersonException dpe) {
             return new CommandResult(MESSAGE_DUPLICATE_PERSON);

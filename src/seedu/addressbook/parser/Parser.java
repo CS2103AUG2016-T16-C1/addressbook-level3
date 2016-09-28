@@ -238,19 +238,24 @@ public class Parser {
      * Parses arguments in the context of the edit person command.
      * 
      * @param args full command args string
-     * @return the prepared command
+     * @return the prepared command 
+     * @throws NumberFormatException 
      */
-    private Command prepareEdit(String args) {
+    private Command prepareEdit(String args) throws NumberFormatException{
     	final Matcher matcher = EDIT_PERSON_ARGS_FORMAT.matcher(args.trim());
         if (!matcher.matches()) {
             return new IncorrectCommand(String.format(MESSAGE_INVALID_COMMAND_FORMAT,
                     EditCommand.MESSAGE_USAGE));
         }
-        return new EditCommand(
-        		Integer.parseInt(matcher.group("targetIndex")),
-        		matcher.group("detail"),
-        		matcher.group("updatedDetail")		
-        		);
+        try {
+			return new EditCommand(
+					Integer.parseInt(matcher.group("targetIndex")),
+					matcher.group("detail"),
+					matcher.group("updatedDetail")		
+					);
+		} catch (IllegalValueException ive) {
+			return new IncorrectCommand(ive.getMessage());
+		}
     	
     }
 
