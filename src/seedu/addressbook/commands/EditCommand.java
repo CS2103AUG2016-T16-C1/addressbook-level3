@@ -27,7 +27,7 @@ public class EditCommand extends Command {
     public static final String MESSAGE_DUPLICATE_PERSON = "This person already exists in the address book";
 
     private final ReadOnlyPerson toEdit;
-    private Person edited;
+    private final Person edited;
 
 
     /**
@@ -97,7 +97,7 @@ public class EditCommand extends Command {
         try {
         	addressBook.addPerson(getEdited());
         	addressBook.removePerson(toEdit);
-            return new CommandResult(String.format(MESSAGE_SUCCESS, edited));
+            return new CommandResult(String.format(MESSAGE_SUCCESS, getEdited()));
         } catch (UniquePersonList.DuplicatePersonException dpe) {
             return new CommandResult(MESSAGE_DUPLICATE_PERSON);
         } catch (PersonNotFoundException e) {
