@@ -25,7 +25,11 @@ public class Parser {
                     + " (?<isEmailPrivate>p?)e/(?<email>[^/]+)"
                     + " (?<isAddressPrivate>p?)a/(?<address>[^/]+)"
                     + "(?<tagArguments>(?: t/[^/]+)*)"); // variable number of tags
-
+    
+    public static final Pattern EDIT_PERSON_ARGS_FORMAT = 
+    		Pattern.compile("(?<targetIndex>.+)"
+    				+ " (?<detail>[^/]+)"
+    				+ " (?<updatedDetail>[^/]+)");
 
     /**
      * Signals that the user input could not be parsed.
@@ -82,7 +86,10 @@ public class Parser {
 
             case ExitCommand.COMMAND_WORD:
                 return new ExitCommand();
-
+            
+            case EditCommand.COMMAND_WORD:
+            	return prepareEdit(arguments);
+            
             case HelpCommand.COMMAND_WORD: // Fallthrough
             default:
                 return new HelpCommand();
@@ -227,6 +234,29 @@ public class Parser {
         final Set<String> keywordSet = new HashSet<>(Arrays.asList(keywords));
         return new FindCommand(keywordSet);
     }
-
+    /**
+     * Parses arguments in the context of the edit person command.
+     * 
+     * @param args full command args string
+     * @return the prepared command 
+     * @throws NumberFormatException 
+     */
+    private Command prepareEdit(String args) throws NumberFormatException{
+    	final Matcher matcher = EDIT_PERSON_ARGS_FORMAT.matcher(args.trim());
+        if (!matcher.matches()) {
+            return new IncorrectCommand(String.format(MESSAGE_INVALID_COMMAND_FORMAT,
+                    EditCommand.MESSAGE_USAGE));
+        }
+        try {
+			return new EditCommand(
+					Integer.parseInt(matcher.group("targetIndex")),
+					matcher.group("detail"),
+					matcher.group("updatedDetail")		
+					);
+		} catch (IllegalValueException ive) {
+			return new IncorrectCommand(ive.getMessage());
+		}
+    	
+    }
 
 }
